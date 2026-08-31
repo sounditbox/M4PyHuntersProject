@@ -2,7 +2,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from os import getenv
 
-load_dotenv()
+load_dotenv('.env.local')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,7 +12,7 @@ DEBUG = getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
 ALLOWED_HOSTS = []
 
-INSTALLED_APPS = [
+SYSTEM_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -20,6 +20,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+ADDITIONAL_APPS = [
+
+]
+
+PROJECT_APPS = [
+    'orders',
+    'reviews',
+    'products',
+    'api'
+]
+
+INSTALLED_APPS = SYSTEM_APPS + ADDITIONAL_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
