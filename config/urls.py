@@ -8,14 +8,14 @@ from config import settings
 APPS_URLS = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    path('api/products/', include('products.urls')),
-    path('api/orders/', include('orders.urls')),
-    path('api/reviews/', include('reviews.urls')),
+    path('products/', include('products.urls')),
+    path('orders/', include('orders.urls')),
+    path('reviews/', include('reviews.urls')),
 
 ]
 
 MEDIA_URLS = [
-    *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
+    #*static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 ]
 
