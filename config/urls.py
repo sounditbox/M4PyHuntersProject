@@ -3,14 +3,16 @@ from django.contrib import admin
 from django.urls import path, include
 
 from config import settings
-
+from products.views import ProductList
 
 APPS_URLS = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    path('products/', include('products.urls')),
-    path('orders/', include('orders.urls')),
-    path('reviews/', include('reviews.urls')),
+    path('products/', include('products.urls', namespace='products')),
+    path('orders/', include('orders.urls', namespace='orders')),
+    path('reviews/', include('reviews.urls', namespace='reviews')),
+
+    path('', ProductList.as_view(), name='product_list_main')
 
 ]
 
