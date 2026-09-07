@@ -67,46 +67,6 @@
     <section class="reviews-section">
       <h2 class="reviews-title">Latest reviews</h2>
       <div class="reviews-grid">
-        <!-- Review Card 1 -->
-        <div class="review-card">
-          <div class="review-rating">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-          </div>
-          <div class="review-body">
-            <h4 class="review-heading">Explosive Citrus Aroma!</h4>
-            <p class="review-text">Used Citra for my latest NEIPA, and the aroma is absolutely incredible. Poured hazy, with intense notes of grapefruit and passion fruit. A must-have for any hop-forward beer!</p>
-          </div>
-          <div class="review-author">
-            <img src="../static/img/avatars/avatar1.svg" alt="User avatar" class="author-avatar">
-            <span class="author-name">Homebrewer_27</span>
-          </div>
-        </div>
-        <div class="review-card">
-          <div class="review-rating">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-          </div>
-          <div class="review-body">
-            <h4 class="review-heading">Great for Beginners</h4>
-            <p class="review-text">When I was just starting to brew, this was the yeast recommended to me, and I have no regrets. It's very forgiving with temperature and handles many beginner mistakes.</p>
-          </div>
-          <div class="review-author">
-            <img src="../static/img/avatars/avatar8.svg" alt="User avatar" class="author-avatar">
-            <span class="author-name">Homebr</span>
-          </div>
-        </div>
-        <div class="review-card">
-          <div class="review-rating">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-          </div>
-          <div class="review-body">
-            <h4 class="review-heading">Perfect  Citrus!</h4>
-            <p class="review-text">The beer always turns out great. A must-have for any hop-forward beer!</p>
-          </div>
-          <div class="review-author">
-            <img src="../static/img/avatars/avatar2.svg" alt="User avatar" class="author-avatar">
-            <span class="author-name">r_27</span>
-          </div>
-        </div>
         {% for review in product.reviews.all %}
             <div class="review-card">
           <div class="review-rating">
@@ -131,6 +91,8 @@
             <span class="author-name">{{ review.owner.username }}</span>
           </div>
         </div>
+        {% empty %}
+        <p>No reviews yet.</p>
         {% endfor %}
       </div>
     </section>
