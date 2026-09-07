@@ -36,6 +36,7 @@ class Product(models.Model):
                                  related_name='products')
     price = models.DecimalField(max_digits=10, decimal_places=2,
                                 validators=[MinValueValidator(0)])
+    specifications = models.JSONField(default=dict, blank=True, null=True)
     image = models.ImageField(upload_to='products/')
     is_active = models.BooleanField(default=True)
     stock = models.IntegerField(default=0, validators=[MinValueValidator(0)])

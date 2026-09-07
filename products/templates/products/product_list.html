@@ -68,7 +68,7 @@
                         <div class="product-card__info">
                             <h4 class="product-card__name">{{ p.name }}</h4>
                             <p class="product-card__price">${{ p.price }}</p>
-                            <p class="product-card__description">{{ p.description }}</p>
+                            <p class="product-card__description">{{ p.description | truncatewords:15 }}</p>
                         </div>
                     </div>
                 </a>
