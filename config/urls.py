@@ -11,6 +11,7 @@ APPS_URLS = [
     path('products/', include('products.urls', namespace='products')),
     path('orders/', include('orders.urls', namespace='orders')),
     path('reviews/', include('reviews.urls', namespace='reviews')),
+    path('users/', include('users.urls', namespace='users')),
 
     path('', ProductList.as_view(), name='product_list_main')
 

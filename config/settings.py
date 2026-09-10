@@ -27,6 +27,7 @@ ADDITIONAL_APPS = [
 ]
 
 PROJECT_APPS = [
+    'users',
     'orders',
     'reviews',
     'products',
@@ -116,3 +117,7 @@ logging.basicConfig(level=logging.DEBUG,
                     datefmt='%Y-%m-%d %H:%M:%S',
                     handlers=[logging.StreamHandler()]
                     )
+
+AUTH_USER_MODEL = 'users.User'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
