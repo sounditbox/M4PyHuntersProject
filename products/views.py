@@ -2,7 +2,7 @@ import logging
 from django.db.models import Q, QuerySet, Avg
 from django.views.generic import ListView, TemplateView, DetailView
 
-from products.models import Product
+from products.models import Product, Category
 
 
 class ProductList(ListView):
@@ -19,6 +19,11 @@ class ProductList(ListView):
     ORDERING_FIELDS = ['price', '-price', 'created_at', '-created_at',
                        'name', '-name', 'rating', '-rating'
                        ]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
 
     def get_queryset(self) -> QuerySet:
         q = super().get_queryset()

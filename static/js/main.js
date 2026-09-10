@@ -28,60 +28,76 @@ document.addEventListener('DOMContentLoaded', function() {
     checkLoginStatus();
 
 
-    // --- Logic for the Main Page (home.html) ---
+    // --- Product catalog filters ---
     const homePageContent = document.querySelector('.main-content-grid');
     if (homePageContent) {
-        // 1. Sort Options Logic
-        const sortButtons = document.querySelectorAll('.sort-options .sort-button');
+        const params = new URLSearchParams(window.location.search);
+
+        function updateQueryParam(name, value) {
+            const url = new URL(window.location.href);
+            if (value) {
+                url.searchParams.set(name, value);
+            } else {
+                url.searchParams.delete(name);
+            }
+            // A new filter or ordering starts on the first page.
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        }
+
+        const searchForm = homePageContent.querySelector('#product-search-form');
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                updateQueryParam('search', searchForm.querySelector('.search-input').value.trim());
+            });
+        }
+
+        const sortButtons = homePageContent.querySelectorAll('.sort-options .sort-button');
+        const sorting = params.get('sorting') || '-created_at';
         sortButtons.forEach(button => {
+            const active = button.dataset.sorting === sorting;
+            button.classList.toggle('active-sort', active);
+            button.setAttribute('aria-pressed', String(active));
             button.addEventListener('click', function() {
-                sortButtons.forEach(btn => btn.classList.remove('active-sort'));
-                this.classList.add('active-sort');
+                updateQueryParam('sorting', button.dataset.sorting);
             });
         });
 
-        // 2. Pagination Logic
+        const selectedCategories = new Set((params.get('categories') || '').split(',').filter(Boolean));
+        const keywordsList = homePageContent.querySelector('.keywords-list');
+        const checkboxes = homePageContent.querySelectorAll('.checkbox-group input[name="categories"]');
 
-
-        // 3. Filter Logic (Keywords and Checkboxes)
-        const keywordsList = document.querySelector('.keywords-list');
-        const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
-
-        if (keywordsList && checkboxes.length > 0) {
-
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const keyword = this.dataset.keyword;
-                    if (this.checked) {
-                        if (!document.querySelector(`.keyword-tag[data-keyword="${keyword}"]`)) {
-                            const newTag = document.createElement('span');
-                            newTag.className = 'keyword-tag';
-                            newTag.setAttribute('data-keyword', keyword);
-                            newTag.innerHTML = `${keyword} <i class="fa-solid fa-xmark remove-keyword-icon"></i>`;
-                            keywordsList.appendChild(newTag);
-                        }
-                    } else {
-                        const tagToRemove = document.querySelector(`.keyword-tag[data-keyword="${keyword}"]`);
-                        if (tagToRemove) {
-                            tagToRemove.remove();
-                        }
-                    }
-                });
-            });
-
-            keywordsList.addEventListener('click', function(event) {
-                const keywordIcon = event.target.closest('.remove-keyword-icon');
-                if (keywordIcon) {
-                    const keywordTag = keywordIcon.closest('.keyword-tag');
-                    const keywordText = keywordTag.dataset.keyword;
-                    const checkbox = document.querySelector(`.checkbox-container input[data-keyword="${keywordText}"]`);
-                    if (checkbox) {
-                        checkbox.checked = false;
-                    }
-                    keywordTag.remove();
+        checkboxes.forEach(checkbox => {
+            const category = checkbox.value;
+            checkbox.checked = selectedCategories.has(category);
+            checkbox.addEventListener('change', function() {
+                if (checkbox.checked) {
+                    selectedCategories.add(category);
+                } else {
+                    selectedCategories.delete(category);
                 }
+                updateQueryParam('categories', [...selectedCategories].join(','));
             });
-        }
+
+            if (keywordsList && checkbox.checked) {
+                const tag = document.createElement('span');
+                tag.className = 'keyword-tag';
+                tag.dataset.keyword = category;
+                tag.textContent = checkbox.dataset.label;
+
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'fa-solid fa-xmark remove-keyword-icon';
+                removeButton.setAttribute('aria-label', `Remove ${checkbox.dataset.label}`);
+                removeButton.addEventListener('click', function() {
+                    selectedCategories.delete(category);
+                    updateQueryParam('categories', [...selectedCategories].join(','));
+                });
+                tag.appendChild(removeButton);
+                keywordsList.appendChild(tag);
+            }
+        });
     }
 
     // --- Logic for Product Detail Pages (product-*.html) ---
