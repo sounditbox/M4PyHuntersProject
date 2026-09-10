@@ -1,6 +1,7 @@
 from pathlib import Path
 from dotenv import load_dotenv
 from os import getenv
+import logging
 
 load_dotenv('.env.local')
 
@@ -108,3 +109,10 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+LOG_LEVEL = logging.DEBUG if DEBUG else logging.INFO
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    handlers=[logging.StreamHandler()]
+                    )

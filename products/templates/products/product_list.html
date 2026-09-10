@@ -74,7 +74,11 @@
                 </a>
                 {% endfor %}
             </div>
+            {% if products %}
             {% include 'includes/pagination.html' %}
+            {% else %}
+            <p>No products found</p>
+            {% endif %}
         </section>
     </div>
 {% endblock %}

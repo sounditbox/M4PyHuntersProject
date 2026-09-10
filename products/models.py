@@ -43,10 +43,6 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def get_rating(self):
-        if self.reviews.count() > 0:
-            return self.reviews.aggregate(Avg('rating'))['rating__avg']
-        return None
 
     def __str__(self):
         return self.name
