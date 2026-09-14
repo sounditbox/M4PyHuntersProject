@@ -84,3 +84,10 @@ class LoginForm(AuthenticationForm):
                 "autocomplete": "current-password"
             }),
     )
+
+
+class UpdateUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('avatar', 'first_name', 'last_name', 'email', 'city',
+                  'address', 'phone')

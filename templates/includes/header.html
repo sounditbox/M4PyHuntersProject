@@ -18,7 +18,7 @@
 
         {% if user.is_authenticated %}
         <div class="header__user-actions" id="auth-user">
-            <a href="#" class="user-icon" aria-label="My Account">
+            <a href="{% url 'users:account' %}" class="user-icon" aria-label="My Account">
                 <img src="{% static 'img/icons/User_alt.svg' %}" alt="User Account">
             </a>
             <a href="#" class="cart-icon" aria-label="Shopping Cart">

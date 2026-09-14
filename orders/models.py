@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-
+from django.db.models import F, Sum
+import logging
 
 class OrderStatus(models.TextChoices):
     PENDING = 'pending'
@@ -17,7 +18,8 @@ class Order(models.Model):
                               default=OrderStatus.PENDING)
     payment_method = models.CharField(max_length=100)
     shipping_address = models.CharField(max_length=255)
-    total_price = models.DecimalField(null=True, max_digits=10, decimal_places=2,
+    total_price = models.DecimalField(default=0, max_digits=10,
+                                      decimal_places=2,
                                       validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -29,11 +31,14 @@ class Order(models.Model):
         return f'/orders/{self.id}'
 
     def save(self, *args, **kwargs):
-        self.total_price = self.get_total_price()
         super().save(*args, **kwargs)
 
-    def get_total_price(self):
-        return sum([item.price * item.quantity for item in self.items.all()])
+    def update_total_price(self):
+        stats = self.items.aggregate(
+            total=Sum(F('price') * F('quantity')))
+
+        self.total_price = stats['total'] or 0
+        self.save(update_fields=['total_price'])
 
     class Meta:
         verbose_name = "Order"
@@ -49,6 +54,10 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2,
                                 validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.order.update_total_price()
 
     def __str__(self):
         return f"{self.product} - {self.quantity}"
