@@ -906,17 +906,13 @@ footer {
     gap: 8px;
 }
 
-.add-to-cart-button .fa-check {
-    display: none;
-}
+
 .add-to-cart-button.is-added {
     background-color: var(--dark-green);
     cursor: default;
 }
-.add-to-cart-button.is-added .fa-cart-shopping {
-    display: none;
-}
-.add-to-cart-button.is-added .fa-check {
+
+.add-to-cart-button.is-added {
     display: inline-block;
 }
 

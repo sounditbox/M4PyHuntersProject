@@ -2,6 +2,7 @@ import logging
 from django.db.models import Q, QuerySet, Avg
 from django.views.generic import ListView, TemplateView, DetailView
 
+from orders.cart import Cart
 from products.models import Product, Category
 
 
@@ -64,7 +65,8 @@ class ProductDetailsView(DetailView):
                 .prefetch_related('reviews'))
 
     def get_context_data(self, **kwargs):
-        product = Product.objects.get(slug=self.kwargs['slug'])
         context = super().get_context_data(**kwargs)
-        context['product'] = product
+        cart = Cart(self.request)
+        context['cart'] = cart.get_summary
+        context['product_in_cart'] = cart.get_quantity(self.object)
         return context

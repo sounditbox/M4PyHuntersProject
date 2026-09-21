@@ -27,21 +27,44 @@
         <!-- Container for managing the cart -->
         <div class="cart-controls">
           <!-- Add to Cart button (visible by default) -->
-          <button class="button button--primary add-to-cart-button" id="add-to-cart-btn">
+            {% if not product.slug in request.session.cart %}
+            <form action="{% url 'orders:cart_add' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1">
+                <input type="hidden" name="product_slug" value="{{ product.slug }}">
+                <button type="submit"
+                        class="button button--primary add-to-cart-button"
+                        id="add-to-cart-btn">
             <i class="fa-solid fa-cart-shopping"></i>
             <span>Add to Cart</span>
           </button>
+            </form>
 
-          <!-- Quantity counter (hidden by default) -->
-          <div class="quantity-counter is-hidden" id="quantity-counter">
-            <button class="quantity-btn" data-action="decrease" aria-label="Decrease quantity">
+
+            {% else %}
+
+            <!-- Quantity counter (hidden by default) -->
+          <div class="quantity-counter" id="quantity-counter">
+              <form action="{% url 'orders:cart_update' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="product_slug" value="{{ product.slug }}">
+                <input type="hidden" name="quantity" value="{{ product_in_cart|add:-1 }}">
+            <button type="submit" class="quantity-btn" data-action="decrease" aria-label="Decrease quantity">
               <i class="fa-solid fa-minus"></i>
             </button>
-            <span class="quantity-value">1 in cart</span>
-            <button class="quantity-btn" data-action="increase" aria-label="Increase quantity">
+              </form>
+            <span class="quantity-value">{{ product_in_cart }} in cart</span>
+
+              <form action="{% url 'orders:cart_update' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="product_slug" value="{{ product.slug }}">
+                <input type="hidden" name="quantity" value="{{ product_in_cart|add:1 }}">
+            <button type="submit" class="quantity-btn" data-action="increase" aria-label="Increase quantity">
               <i class="fa-solid fa-plus"></i>
             </button>
+              </form>
           </div>
+            {% endif %}
         </div>
       </div>
     </section>
@@ -87,7 +110,7 @@
 
           </div>
           <div class="review-author">
-            <img src="../static/img/avatars/avatar2.svg" alt="User avatar" class="author-avatar">
+            <img src="{{ review.owner.avatar.url }}" alt="User avatar" class="author-avatar">
             <span class="author-name">{{ review.owner.username }}</span>
           </div>
         </div>
