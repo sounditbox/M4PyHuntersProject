@@ -61,7 +61,11 @@
               {% csrf_token %}
             <div class="checkout-form-group">
               <label for="acc-image">Avatar</label>
+              {% if user.avatar %}
               <img src="{{ user.avatar.url }}" alt="Avatar" width="100" height="100">
+              {% else %}
+              <img src="{% static 'img/icons/User_alt.svg' %}" alt="Default avatar" width="100" height="100">
+              {% endif %}
               <input type="file" id="acc-image" name="avatar" class="Input" accept="image/*">
             </div>
             <div class="checkout-form-group">
