@@ -41,13 +41,16 @@ class ProductList(ListView):
             q = q.filter(
                 Q(name__icontains=search) | Q(description__icontains=search)
             )
-        if min_price and isinstance(min_price, (int, float)):
-            # raise TypeError('Min price must be a number')
-            min_price = float(min_price)
-            q = q.filter(price__gte=min_price)
-        if max_price and isinstance(max_price, (int, float)):
-            max_price = float(max_price)
-            q = q.filter(price__lte=max_price)
+        if min_price:
+            try:
+                q = q.filter(price__gte=float(min_price))
+            except (ValueError, TypeError):
+                pass
+        if max_price:
+            try:
+                q = q.filter(price__lte=float(max_price))
+            except (ValueError, TypeError):
+                pass
         if sorting and sorting in self.ORDERING_FIELDS:
             q = q.order_by(sorting)
         self.queryset = q
