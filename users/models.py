@@ -7,3 +7,7 @@ class User(AbstractUser):
     city = models.CharField(max_length=100, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     phone = models.CharField(max_length=15, null=True, blank=True)
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
