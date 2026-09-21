@@ -53,7 +53,6 @@ class ProductList(ListView):
                 pass
         if sorting and sorting in self.ORDERING_FIELDS:
             q = q.order_by(sorting)
-        self.queryset = q
         return q
 
 
