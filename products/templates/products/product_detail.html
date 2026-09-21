@@ -28,7 +28,7 @@
         <!-- Container for managing the cart -->
         <div class="cart-controls">
           <!-- Add to Cart button (visible by default) -->
-            {% if not product.slug in request.session.cart %}
+            {% if not product_in_cart %}
             <form action="{% url 'orders:cart_add' %}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
