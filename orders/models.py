@@ -13,7 +13,7 @@ class OrderStatus(models.TextChoices):
 
 
 class Order(models.Model):
-    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    owner = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
     status = models.CharField(max_length=10, choices=OrderStatus.choices,
                               default=OrderStatus.PENDING)
     payment_method = models.CharField(max_length=100)
