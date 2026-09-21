@@ -30,6 +30,7 @@
             {% if not product.slug in request.session.cart %}
             <form action="{% url 'orders:cart_add' %}" method="POST">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <input type="hidden" name="quantity" value="1">
                 <input type="hidden" name="product_slug" value="{{ product.slug }}">
                 <button type="submit"
@@ -47,6 +48,7 @@
           <div class="quantity-counter" id="quantity-counter">
               <form action="{% url 'orders:cart_update' %}" method="POST">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <input type="hidden" name="product_slug" value="{{ product.slug }}">
                 <input type="hidden" name="quantity" value="{{ product_in_cart|add:-1 }}">
             <button type="submit" class="quantity-btn" data-action="decrease" aria-label="Decrease quantity">
@@ -57,6 +59,7 @@
 
               <form action="{% url 'orders:cart_update' %}" method="POST">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <input type="hidden" name="product_slug" value="{{ product.slug }}">
                 <input type="hidden" name="quantity" value="{{ product_in_cart|add:1 }}">
             <button type="submit" class="quantity-btn" data-action="increase" aria-label="Increase quantity">

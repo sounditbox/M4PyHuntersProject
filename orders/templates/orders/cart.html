@@ -36,6 +36,7 @@ Cart | Hop & Barley
             </div>
               <form method="POST" action="{% url 'orders:cart_remove'%}">
                   {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
                   <input type="hidden" name="product_slug" value="{{ product.product.slug }}">
                 <button type="submit" class="button--remove">
                   Remove <i class="fa-solid fa-xmark"></i>

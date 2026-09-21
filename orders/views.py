@@ -1,10 +1,21 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-from django.urls import reverse
-from django.views import View
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import TemplateView
 
 from orders.cart import Cart
 from products.models import Product
+
+
+def redirect_to_cart_source(request):
+    next_url = request.POST.get('next', '').strip()
+    if url_has_allowed_host_and_scheme(
+        url=next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return HttpResponseRedirect(next_url)
+    return redirect('orders:cart')
 
 
 class CartView(TemplateView):
@@ -21,8 +32,6 @@ class CartAddView(TemplateView):
     template_name = 'orders/cart.html'
 
     def post(self, request, *args, **kwargs):
-        next = request.POST.get('next', reverse('products:product_details'))
-
         product_slug = request.POST.get('product_slug')
         product = Product.objects.get(slug=product_slug)
         quantity = int(request.POST.get('quantity', 1))
@@ -31,7 +40,7 @@ class CartAddView(TemplateView):
             cart.add(product, quantity)
         else:
             cart.set_quantity(product, quantity)
-        return redirect(next, slug=product.slug)
+        return redirect_to_cart_source(request)
 
 
 class CartUpdateView(CartAddView):
@@ -45,4 +54,4 @@ class CartRemoveView(TemplateView):
         product_slug = request.POST.get('product_slug')
         product = Product.objects.get(slug=product_slug)
         cart = Cart(request).remove(product)
-        return redirect('orders:cart')
+        return redirect_to_cart_source(request)
