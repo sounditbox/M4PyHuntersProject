@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, Sum
-import logging
+
 
 class OrderStatus(models.TextChoices):
     PENDING = 'pending'
@@ -13,6 +14,14 @@ class OrderStatus(models.TextChoices):
 
 
 class Order(models.Model):
+    STATUS_TRANSITIONS = {
+        OrderStatus.PENDING: {OrderStatus.PAID, OrderStatus.CANCELLED},
+        OrderStatus.PAID: {OrderStatus.SHIPPED, OrderStatus.CANCELLED},
+        OrderStatus.SHIPPED: {OrderStatus.DELIVERED},
+        OrderStatus.DELIVERED: set(),
+        OrderStatus.CANCELLED: set(),
+    }
+
     owner = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
     status = models.CharField(max_length=10, choices=OrderStatus.choices,
                               default=OrderStatus.PENDING)
@@ -30,7 +39,33 @@ class Order(models.Model):
     def get_absolute_url(self):
         return f'/orders/{self.id}'
 
+    def validate_status_transition(self):
+        if self.status not in OrderStatus.values:
+            raise ValidationError({'status': 'Unknown order status.'})
+        if self._state.adding:
+            if self.status != OrderStatus.PENDING:
+                raise ValidationError({
+                    'status': 'New orders must have pending status.',
+                })
+            return
+
+        current_status = (Order.objects.values_list('status', flat=True)
+                          .get(pk=self.pk))
+        if self.status == current_status:
+            return
+        if self.status not in self.STATUS_TRANSITIONS.get(current_status, set()):
+            raise ValidationError({
+                'status': f'Cannot change status from {current_status} to {self.status}.',
+            })
+
+    def clean(self):
+        super().clean()
+        self.validate_status_transition()
+
     def save(self, *args, **kwargs):
+        update_fields = kwargs.get('update_fields')
+        if update_fields is None or 'status' in update_fields:
+            self.validate_status_transition()
         super().save(*args, **kwargs)
 
     def update_total_price(self):
